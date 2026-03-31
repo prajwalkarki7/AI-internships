@@ -1,40 +1,43 @@
 class Accountholder:
-    all_accounts = []
 
     def __init__(self, first_name, last_name, account_number):
         self.first_name = first_name
         self.last_name = last_name
         self.account_number = account_number
+        self.transactions=[]
 
-    def client_info():
+    def create_account():
         name = input("Enter the first name: ")
         caste = input("Enter your last name: ")
         number = input("Enter your account number: ")
         
-        new_obj = Accountholder(name, caste, number)
-        Accountholder.all_accounts.append(new_obj)
+        account = Accountholder(name, caste, number)
         print(f"Account created for {name}!")
-        return new_obj
-       
-class Transaction:
-    balance = 1000
-    transactions=[]
-    
-    def deposit():
-        Accountholder.client_info()
+        return account
+    def deposit(self,accounts):
         
-        search_num = input("Enter your account number to search: ")
+        account_num = input("Enter your account number to search: ")
         
 
-        matches = list(filter(lambda acc: acc.account_number == search_num, Accountholder.all_accounts))
+        is_account = list(filter(lambda acc: acc.account_number == account_num, accounts))
         
-        if matches:
+        if is_account:
             amount = int(input("Enter deposit amount: "))
-            Transaction.balance += amount
-            print(f"Success! balance is now: {Transaction.balance}")
-            Transaction.transactions.append(Transaction.balance)
+            transaction=Transaction(account_num,amount,"deposit")
+            self.transactions.append(transaction)
+            print(f"Success! balance is now:")
         else:
             print("Account not found.")
+
+accounts=[]
+
+class Transaction:
+
+    def __init__(self,account_no,type,amount):
+        self.account_no=account_no
+        self.type=type
+        self.amount=amount
+    
     
     def withdraw():
         search_num = input("Enter your account number to search: ")
@@ -75,7 +78,10 @@ class Transaction:
 class main:
         while True:
             choice = input("Enter 1 to deposit, 2 to withdraw, or 3 to view transaction details, 4 to delete an account:, 5 to logout ")
-            if choice == '1':
+            if choice == '0':
+                account=Accountholder.create_account()
+                accounts.append(account)
+            elif choice == '1':
                 Transaction.deposit()
             elif choice == '2':
                 Transaction.withdraw()
@@ -90,3 +96,11 @@ class main:
                 print("Invalid choice. Please try again.")
 
 obj=main()
+class account:
+    name=""
+    caste=''
+    acc_num=""
+
+class trasac:
+    amount=0
+    type=""
