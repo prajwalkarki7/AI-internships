@@ -1,24 +1,10 @@
-import psycopg2
+from sqlalchemy import create_engine, text
 
-# connect to PostgreSQL
-conn = psycopg2.connect(
-    dbname="Subscription management system",
-    user="postgres",
-    password="prajwal",
-    host="localhost",
-    port="5432"
-)
+database=create_engine('postgresql://postgres:prajwal@localhost:5432/Subscription management system')
 
-cur = conn.cursor()
+with database.connect() as connection:
+    result = connection.execute(text("SELECT * FROM users;"))
+    for row in result:
+        print(row)
 
-# query
-cur.execute("SELECT * FROM users;")
-
-rows = cur.fetchall()
-
-# print data
-for row in rows:
-    print(row)
-
-cur.close()
-conn.close()
+connection.close()
