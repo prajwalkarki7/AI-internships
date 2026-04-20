@@ -2,7 +2,7 @@ import os
 from dotenv import load_dotenv
 from groq import Groq
 from sqlalchemy.orm import DeclarativeBase, Session
-from sqlalchemy import create_engine, Column, Integer, String
+from sqlalchemy import create_engine, Column, Integer, String, select
 
 load_dotenv()
 client = Groq(api_key=os.getenv("GROQ_API_KEY"))
@@ -27,6 +27,17 @@ while True:
     if user_input.lower() in ["exit", "quit"]:
         print("Exiting the teaching assistant. Goodbye!")
         break
+    
+    if user_input.lower() == "tell me about what i learn ?":
+        past_queries = session.query(UserQuery).all()
+        if past_queries:
+            print("\nHere's a summary of what you've learned so far:")
+            stmt=select(UserQuery).limit(5)  # Show last 5 interactions
+            for query in session.scalars(stmt):
+                print(f"\nQ: {query.user_question}\nA: {query.ai_answer}\n{'-'*40}")
+        else:
+            print("\nYou haven't asked any questions yet. Ask something to start learning!")
+        continue
 
     completion = client.chat.completions.create(
         model="groq/compound",
@@ -45,11 +56,10 @@ while True:
         print(content, end="", flush=True)
         full_response += content
 
-    # 3. SAVE THE WHOLE CONVERSATION TURN (Outside the chunk loop)
     if full_response:
         new_entry = UserQuery(
             user_question=user_input, 
             ai_answer=full_response
         )
         session.add(new_entry)
-        session.commit() # This saves one single row with both texts
+        session.commit() 
